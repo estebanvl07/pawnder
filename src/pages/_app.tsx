@@ -4,9 +4,18 @@ import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 
 import { api } from "~/utils/api";
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
 
 import "~/styles/globals.css";
+
+import { Montserrat } from "next/font/google";
+import clsx from "clsx";
+
+const montserrat = Montserrat({
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  style: "normal",
+});
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -14,11 +23,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <NextUIProvider>
-        <div className={GeistSans.className}>
+      <HeroUIProvider>
+        <div className={clsx("-tracking-wide", montserrat.className)}>
           <Component {...pageProps} />
         </div>
-      </NextUIProvider>
+      </HeroUIProvider>
     </SessionProvider>
   );
 };
