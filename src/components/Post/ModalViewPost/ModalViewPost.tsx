@@ -17,9 +17,11 @@ import SideContent from "./SideContent";
 import { Close, DoubleArrowBack, DoubleArrowForward } from "~/components/Icons";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
+import { useResize } from "~/hooks/useResize";
+import clsx from "clsx";
 
 const images = [
-  "https://pbs.twimg.com/media/Gi8x2PaW8AAidOF?format=jpg&name=large",
+  "https://pbs.twimg.com/media/Gi2CE3RWcAAnlTZ?format=jpg&name=900x900",
   "https://pbs.twimg.com/media/Gi2Cu4daAAAbMoC?format=jpg&name=medium",
   "https://pbs.twimg.com/media/Gi2CE3RWcAAnlTZ?format=jpg&name=900x900",
 ];
@@ -32,6 +34,8 @@ interface ModalViewProps {
 const ModalViewPost = ({ isOpen, onClose }: ModalViewProps) => {
   const [showSideContent, setShowSideContent] = useState(true);
 
+  const { isDesktop } = useResize();
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="full" backdrop="opaque">
       <ModalContent className="bg-transparent font-montserrat">
@@ -42,7 +46,11 @@ const ModalViewPost = ({ isOpen, onClose }: ModalViewProps) => {
                 layout
                 className="relative flex h-screen flex-grow items-center justify-center"
               >
-                <div className="absolute top-0 z-10 flex w-full items-center justify-between p-8 py-8">
+                <div
+                  className={clsx(
+                    "absolute top-0 z-10 flex w-full items-center justify-between p-3 py-3 md:p-8 md:py-8",
+                  )}
+                >
                   <Button
                     className="bg-transparent"
                     onPress={onClose}
@@ -51,43 +59,45 @@ const ModalViewPost = ({ isOpen, onClose }: ModalViewProps) => {
                   >
                     <Close color="white" />
                   </Button>
-                  <Button
-                    className="bg-transparent"
-                    isIconOnly
-                    radius="full"
-                    onPress={() => setShowSideContent(!showSideContent)}
-                  >
-                    {showSideContent ? (
-                      <DoubleArrowForward color="white" />
-                    ) : (
-                      <DoubleArrowBack color="white" />
-                    )}
-                  </Button>
+                  {isDesktop && (
+                    <Button
+                      className="bg-transparent"
+                      isIconOnly
+                      radius="full"
+                      onPress={() => setShowSideContent(!showSideContent)}
+                    >
+                      {showSideContent ? (
+                        <DoubleArrowForward color="white" />
+                      ) : (
+                        <DoubleArrowBack color="white" />
+                      )}
+                    </Button>
+                  )}
                 </div>
-                <div className="w-[calc(100vw-25rem)]">
-                  {/* image slider or video slider */}
 
-                  <Swiper spaceBetween={50}>
-                    {images.map((image) => {
-                      return (
-                        <SwiperSlide>
-                          <div className="flex w-full items-center justify-center">
-                            <Image
-                              alt="Woman listing to music"
-                              className="m-2 max-h-screen w-full object-contain"
-                              radius="none"
-                              src={image}
-                            />
-                          </div>
-                        </SwiperSlide>
-                      );
-                    })}
+                <div className={clsx("w-screen md:w-[calc(100vw-25rem)]")}>
+                  <Swiper centeredSlides centeredSlidesBounds spaceBetween={0}>
+                    {images.map((image) => (
+                      <SwiperSlide>
+                        <div className="flex w-full items-center justify-center">
+                          <Image
+                            alt="Woman listing to music"
+                            className="m-auto max-h-screen w-full object-contain md:m-2"
+                            radius="none"
+                            src={image}
+                          />
+                        </div>
+                      </SwiperSlide>
+                    ))}
                   </Swiper>
                 </div>
               </motion.div>
-              <AnimatePresence>
-                {showSideContent && <SideContent />}
-              </AnimatePresence>
+
+              {isDesktop && (
+                <AnimatePresence>
+                  {showSideContent && <SideContent />}
+                </AnimatePresence>
+              )}
             </ModalBody>
           </>
         )}

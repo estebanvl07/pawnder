@@ -158,8 +158,6 @@ model UserPassword {
   updatedAt DateTime @updatedAt
 }
 
-
-
 model VerificationToken {
     identifier String
     token      String   @unique

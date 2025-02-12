@@ -1,29 +1,27 @@
-import { Button } from "@heroui/react";
+import clsx from "clsx";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Map } from "~/components";
-import { ArrowBack } from "~/components/Icons";
 import Sidebar from "~/components/Sidebar/Sidebar";
+import Navigator, { NavigatorProps } from "./Navigator";
+import { AnimatePresence, motion } from "framer-motion";
+import { useResize } from "~/hooks/useResize";
 
 interface HomeLayoutProps {
   children: React.ReactNode;
-  navigator?: {
-    show: boolean;
-    title: string;
-    subtitle?: string;
-    goBack?: boolean;
-  };
+  sectionClassName?: string;
+  navigator?: NavigatorProps;
 }
 
-const HomeLayout = ({ children, navigator }: HomeLayoutProps) => {
+const HomeLayout = ({
+  children,
+  navigator,
+  sectionClassName,
+}: HomeLayoutProps) => {
   const [fixTab, setFixTab] = useState(false);
-  const router = useRouter();
 
   const mainRef = useRef<HTMLDivElement>(null);
 
-  const goBack = () => {
-    router.back();
-  };
+  const { isDesktop } = useResize();
 
   const handleScroll = useCallback(() => {
     if (!mainRef.current) return;
@@ -40,39 +38,20 @@ const HomeLayout = ({ children, navigator }: HomeLayoutProps) => {
 
   return (
     <main className="mx-auto flex h-screen max-w-[120rem] flex-row">
-      <Sidebar />
-      <div className="flex-grow overflow-y-auto" ref={mainRef}>
-        <aside className="mx-auto max-w-[48rem] p-4">
-          {navigator?.show && (
-            <header className="mb-4 flex items-center justify-start gap-8">
-              {navigator.goBack && (
-                <Button
-                  onPress={goBack}
-                  isIconOnly
-                  radius="full"
-                  variant="flat"
-                  size="sm"
-                >
-                  <ArrowBack size={20} />
-                </Button>
-              )}
-              <aside className="flex flex-col">
-                <h1 className="text-xl font-semibold leading-5">
-                  {navigator.title}
-                </h1>
-                {navigator.subtitle && (
-                  <p className="text-sm leading-5">{navigator.subtitle}</p>
-                )}
-              </aside>
-            </header>
-          )}
-          {children}
-        </aside>
-      </div>
-
-      {/* <div className="w-[40rem]">
-        <Map />
-      </div> */}
+      {isDesktop && <Sidebar />}
+      <AnimatePresence>
+        <motion.div layout className="flex-grow overflow-y-auto" ref={mainRef}>
+          <motion.section
+            className={clsx(
+              "mx-auto max-w-[48rem] px-2 py-4 md:p-4",
+              sectionClassName,
+            )}
+          >
+            {navigator?.show && <Navigator {...navigator} />}
+            {children}
+          </motion.section>
+        </motion.div>
+      </AnimatePresence>
     </main>
   );
 };

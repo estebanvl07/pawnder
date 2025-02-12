@@ -5,7 +5,7 @@ export interface SidebarProps {
 }
 
 export interface OptionProps {
-  icon?: ReactElement;
+  icon?: string;
   onPress?: VoidFunction;
   title: string;
   href: string;

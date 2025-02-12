@@ -3,25 +3,27 @@ import { OptionProps } from "./types";
 import { Link } from "@heroui/react";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 const Option: FC<OptionProps> = ({ href, title, icon, onPress }) => {
   const pathname = usePathname();
 
   return (
-    <li className="hover: group w-fit">
+    <li className="group w-fit">
       <Link
         href={href}
-        className={clsx("duration-400 flex items-center gap-2", {
-          "text-primary": pathname === href,
-          "text-gray-600": pathname !== href,
-        })}
+        className={clsx(
+          "flex items-center gap-2 transition-transform duration-400 group-hover:translate-x-4",
+          {
+            "text-primary": pathname === href,
+            "text-gray-600": pathname !== href,
+          },
+        )}
         onPress={onPress}
       >
-        {icon}
+        {icon && <Icon icon={icon} width={26} />}
 
-        <p className="transition-transform group-hover:translate-x-4">
-          {title}
-        </p>
+        <p className="">{title}</p>
       </Link>
     </li>
   );

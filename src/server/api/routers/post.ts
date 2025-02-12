@@ -1,4 +1,6 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { createPost } from "~/components/Post/schema";
 
 import {
   createTRPCRouter,
@@ -7,12 +9,26 @@ import {
 } from "~/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
+  create: protectedProcedure
+    .input(createPost)
+    .mutation(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+      try {
+        console.log(userId, "USERRR");
+
+        await ctx.db.post.create({
+          data: {
+            content: input.content,
+            createdById: userId,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error creando el post",
+          cause: error,
+        });
+      }
     }),
 
   // create: protectedProcedure
@@ -35,7 +51,7 @@ export const postRouter = createTRPCRouter({
     return post ?? null;
   }),
 
-  getSecretMessage: protectedProcedure.query(() => {
+  getSecretMessage: publicProcedure.query(() => {
     return "you can now see this secret message!";
   }),
 });

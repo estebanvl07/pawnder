@@ -18,7 +18,7 @@ const Post = () => {
   return (
     <div
       onClick={goToPost}
-      className="cursor-pointer rounded-lg px-6 hover:bg-zinc-100"
+      className="cursor-pointer rounded-lg px-2 hover:bg-zinc-100 md:px-6"
     >
       <div className="flex items-start gap-3 border-b py-6">
         <div>

@@ -1,6 +1,7 @@
 import { Avatar } from "@heroui/avatar";
 import { Button, Image, useDisclosure, User } from "@heroui/react";
 import React from "react";
+import Comments from "~/components/Post/Comments";
 import ModalViewPost from "~/components/Post/ModalViewPost/ModalViewPost";
 import HomeLayout from "~/modules/Home/HomeLayout";
 
@@ -16,7 +17,7 @@ const PostPage = () => {
       }}
     >
       <ModalViewPost isOpen={isOpen} onClose={onClose} />
-      <div className="flex flex-col gap-y-4">
+      <div className="mb-4 flex flex-col gap-y-4 px-2 md:px-0">
         <header className="flex items-start justify-between gap-8">
           <div className="flex gap-5">
             <User
@@ -32,7 +33,7 @@ const PostPage = () => {
             Follow
           </Button>
         </header>
-        <main>
+        <main className="">
           <p className="mb-4">
             Bun s sigue poniendo mejor cada día! Pronto tendremos 100% de
             compatibilidad con Node y un nuevo bucket S3 (Object Storage) en Bun
@@ -60,6 +61,7 @@ const PostPage = () => {
           </div>
         </footer>
       </div>
+      <Comments />
     </HomeLayout>
   );
 };
