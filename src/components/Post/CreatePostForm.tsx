@@ -10,6 +10,8 @@ import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import ImageView from "./ImageView";
+import Link from "next/link";
+import { useMyUser } from "~/hooks/useMyUser";
 
 export interface ICreatePostForm {
   classNames?: {
@@ -30,7 +32,7 @@ const CreatePostForm = ({
   const { files } = useFilesContext();
   const [text, setText] = useState<string>("");
 
-  const { data: session } = useSession();
+  const { user } = useMyUser();
 
   const { mutateAsync: CreatePostMutation, isPending } =
     api.post.create.useMutation();
@@ -61,19 +63,23 @@ const CreatePostForm = ({
       <div className="flex items-start gap-x-4">
         <div>
           <Avatar
-            src={session?.user.image || undefined}
-            name={session?.user.name || ""}
+            as={Link}
+            href={`/paw/${user?.userTag}`}
+            src={user?.image || undefined}
+            name={user?.name || ""}
           />
         </div>
-        <div className="w-full rounded-xl border p-3 pt-1">
-          <div className="flex flex-col gap-y-3">
+        <div className="w-full p-3 pt-1">
+          <div className="flex flex-col gap-y-3 rounded-xl border">
             <Textarea
               className="w-full text-sm outline-none"
               classNames={{
-                inputWrapper: "!border-none !shadow-none px-2",
+                inputWrapper: "!border-none !shadow-none ",
               }}
               variant="bordered"
-              minRows={1}
+              minRows={3}
+              isClearable
+              onClear={() => setText("")}
               placeholder={placeholder}
               value={text}
               onChange={onChange}
@@ -87,7 +93,7 @@ const CreatePostForm = ({
             )}
           </div>
 
-          <footer className="mt-4 flex items-center justify-between">
+          <footer className="mt-2 flex items-center justify-between">
             <div className="flex items-center gap-x-2">
               <CustomInputFile />
               {/* <Button size="sm" isIconOnly radius="full" variant="flat">

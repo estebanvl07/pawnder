@@ -1,6 +1,6 @@
 import { Button, useDisclosure } from "@heroui/react";
 import React, { useState } from "react";
-import AuthModal from "../AuthModal/AuthModal";
+import AuthModal from "../../modules/Signin/AuthModal/AuthModal";
 
 const SignIn = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

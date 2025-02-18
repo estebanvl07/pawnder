@@ -19,20 +19,24 @@ import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import { useResize } from "~/hooks/useResize";
 import clsx from "clsx";
-
-const images = [
-  "https://pbs.twimg.com/media/Gi2CE3RWcAAnlTZ?format=jpg&name=900x900",
-  "https://pbs.twimg.com/media/Gi2Cu4daAAAbMoC?format=jpg&name=medium",
-  "https://pbs.twimg.com/media/Gi2CE3RWcAAnlTZ?format=jpg&name=900x900",
-];
+import { PostIncludes } from "../types/post";
 
 interface ModalViewProps {
   isOpen: boolean;
+  defaultImage?: number;
   onClose: () => void;
+  post: PostIncludes;
 }
 
-const ModalViewPost = ({ isOpen, onClose }: ModalViewProps) => {
+const ModalViewPost = ({
+  isOpen,
+  onClose,
+  defaultImage = 0,
+  post,
+}: ModalViewProps) => {
   const [showSideContent, setShowSideContent] = useState(true);
+
+  const { images } = post;
 
   const { isDesktop } = useResize();
 
@@ -76,26 +80,33 @@ const ModalViewPost = ({ isOpen, onClose }: ModalViewProps) => {
                 </div>
 
                 <div className={clsx("w-screen md:w-[calc(100vw-25rem)]")}>
-                  <Swiper centeredSlides centeredSlidesBounds spaceBetween={0}>
-                    {images.map((image) => (
-                      <SwiperSlide>
-                        <div className="flex w-full items-center justify-center">
-                          <Image
-                            alt="Woman listing to music"
-                            className="m-auto max-h-screen w-full object-contain md:m-2"
-                            radius="none"
-                            src={image}
-                          />
-                        </div>
-                      </SwiperSlide>
-                    ))}
+                  <Swiper
+                    defaultValue={defaultImage}
+                    centeredSlides
+                    centeredSlidesBounds
+                    spaceBetween={0}
+                  >
+                    {images &&
+                      images?.length > 0 &&
+                      images.map((image) => (
+                        <SwiperSlide>
+                          <div className="flex w-full items-center justify-center">
+                            <Image
+                              alt="Woman listing to music"
+                              className="m-auto max-h-screen w-full object-contain md:m-2"
+                              radius="none"
+                              src={image.url}
+                            />
+                          </div>
+                        </SwiperSlide>
+                      ))}
                   </Swiper>
                 </div>
               </motion.div>
 
               {isDesktop && (
                 <AnimatePresence>
-                  {showSideContent && <SideContent />}
+                  {showSideContent && <SideContent post={post} />}
                 </AnimatePresence>
               )}
             </ModalBody>

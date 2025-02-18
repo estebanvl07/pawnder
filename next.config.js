@@ -6,7 +6,19 @@ import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
 const config = {
-  reactStrictMode: true,
+  reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "heroui.com",
+      },
+      {
+        protocol: "https",
+        hostname: "pbs.twimg.com",
+      },
+    ],
+  },
 
   /**
    * If you are using `appDir` then you must comment the below `i18n` config out.

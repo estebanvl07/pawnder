@@ -1,8 +1,11 @@
 import React from "react";
 import Post from "./Post";
 import CreatePostForm from "./CreatePostForm";
+import { PostIncludes } from "./types/post";
 
-const Comments = () => {
+const Comments = ({ comments }: { comments: PostIncludes[] }) => {
+  console.log(comments);
+
   return (
     <div className="flex flex-col">
       <CreatePostForm
@@ -13,9 +16,9 @@ const Comments = () => {
         }}
       />
       <div className="flex flex-col text-sm">
-        <Post />
-        <Post />
-        <Post />
+        {comments?.map((comment) => {
+          return <Post {...comment} />;
+        })}
       </div>
     </div>
   );

@@ -3,7 +3,6 @@ import { SignInTemplate } from "./signInEmail";
 import nodemailer, { type Transport } from "nodemailer";
 import BrevoTransport from "nodemailer-brevo-transport";
 import { env } from "~/env";
-import { reminderMovement } from "./reminderMovement";
 // import { FixedMovements } from "@prisma/client";
 
 const FROM_NO_REPLAY = "Pawnder <viloriajoel10@gmail.com>";

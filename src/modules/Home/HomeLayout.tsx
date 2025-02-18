@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Sidebar from "~/components/Sidebar/Sidebar";
 import Navigator, { NavigatorProps } from "./Navigator";
@@ -18,7 +17,6 @@ const HomeLayout = ({
   sectionClassName,
 }: HomeLayoutProps) => {
   const [fixTab, setFixTab] = useState(false);
-
   const mainRef = useRef<HTMLDivElement>(null);
 
   const { isDesktop } = useResize();
@@ -40,16 +38,21 @@ const HomeLayout = ({
     <main className="mx-auto flex h-screen max-w-[120rem] flex-row">
       {isDesktop && <Sidebar />}
       <AnimatePresence>
-        <motion.div layout className="flex-grow overflow-y-auto" ref={mainRef}>
-          <motion.section
-            className={clsx(
-              "mx-auto max-w-[48rem] px-2 py-4 md:p-4",
-              sectionClassName,
-            )}
-          >
-            {navigator?.show && <Navigator {...navigator} />}
-            {children}
-          </motion.section>
+        <motion.div
+          layout
+          className="scrollbar-customize flex flex-grow overflow-y-auto"
+          ref={mainRef}
+        >
+          <motion.div className="mx-auto h-full gap-x-8">
+            <motion.div initial={{}} className={"flex w-full"}>
+              {navigator?.show && <Navigator {...navigator} />}
+            </motion.div>
+            <motion.section
+              className={clsx("relative h-full w-[42rem]", sectionClassName)}
+            >
+              {children}
+            </motion.section>
+          </motion.div>
         </motion.div>
       </AnimatePresence>
     </main>

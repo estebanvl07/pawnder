@@ -1,33 +1,53 @@
-import { Avatar, Button, Image } from "@heroui/react";
+import { Avatar, Button } from "@heroui/react";
 import { User } from "@heroui/user";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/router";
 import React from "react";
+import { PostIncludes } from "./types/post";
+import ImagesOfPost from "./ImagesOfPost";
+import { useSession } from "next-auth/react";
+import { useMyUser } from "~/hooks/useMyUser";
 
-const Post = () => {
+const PostLayout = ({
+  content,
+  id,
+  comments,
+  images,
+  createdAt,
+  createdBy,
+  _count,
+  ...props
+}: PostIncludes) => {
   const router = useRouter();
+  const { status, data: session } = useSession();
+  const { user } = useMyUser();
+
+  const isMyProfile = session?.user.id === user?.id;
 
   const goToPost = () => {
-    router.push("/test/post/23");
+    router.push(`/paw/test/post/${id}`);
   };
 
   const goToProfile = (e: any) => {
     e.stopPropagation();
-    router.push("/test");
+    if (isMyProfile) return;
+    router.push("/paw/test");
   };
 
   return (
     <div
       onClick={goToPost}
-      className="cursor-pointer rounded-lg px-2 hover:bg-zinc-100 md:px-6"
+      className="cursor-pointer rounded-lg px-2 hover:bg-zinc-50 md:px-6"
     >
       <div className="flex items-start gap-3 border-b py-6">
         <div>
           <Avatar
-            src="https://heroui.com/avatars/avatar-1.png"
+            src={createdBy?.image || ""}
+            name={createdBy?.name || ""}
             onClick={goToProfile}
           />
         </div>
-        <aside className="flex flex-col gap-y-3">
+        <aside className="flex w-full flex-col gap-y-1">
           <header className="flex items-start justify-between gap-8">
             <div className="flex gap-5">
               <User
@@ -44,35 +64,44 @@ const Post = () => {
                 name="Zoey Lang"
               />
             </div>
-            <Button color="primary" radius="full" size="sm">
-              Follow
-            </Button>
+            {!isMyProfile && status === "authenticated" && (
+              <Button color="primary" radius="full" size="sm">
+                Follow
+              </Button>
+            )}
           </header>
-          <main>
-            <p className="mb-4">
-              Bun s sigue poniendo mejor cada día! Pronto tendremos 100% de
-              compatibilidad con Node y un nuevo bucket S3 (Object Storage) en
-              Bun para almacenar información y soporte nativo PostgreSQL en Bun.
-            </p>
-            <Image
-              alt="Woman listing to music"
-              className="w-full object-cover"
-              style={{
-                viewTransitionName: "image",
-              }}
-              width={"100%"}
-              src="https://heroui.com/images/hero-card.jpeg"
-            />
+          <main className="flex flex-col gap-y-4">
+            <p>{content}</p>
+            {images && images?.length > 0 && (
+              <div className="max-h-fit max-w-full overflow-hidden rounded-xl border">
+                <ImagesOfPost images={images} />
+              </div>
+            )}
           </main>
-          <footer className="flex items-center gap-3">
-            <div className="flex gap-1">
-              <p className="text-small font-semibold text-default-400">4</p>
-              <p className="text-small text-default-400">Following</p>
-            </div>
-            <div className="flex gap-1">
-              <p className="text-small font-semibold text-default-400">97.1K</p>
-              <p className="text-small text-default-400">Followers</p>
-            </div>
+          <footer className="mt-2 flex items-center gap-32">
+            <ul className="flex items-center justify-between gap-x-4 [&>li]:flex [&>li]:items-center [&>li]:gap-1 [&>li]:text-sm">
+              <li>
+                <Icon icon="mynaui:heart" width={20} />
+                {/* {_count.likes || null} */}
+                {/* <Icon icon="mynaui:heart-solid" width={20} /> */}
+              </li>
+              <li>
+                <Icon icon="mynaui:chat" width={20} />
+                {/* {_count.comments} */}
+              </li>
+              {/* <li>
+                <Icon icon="mynaui:repeat" width={20} />1
+              </li> */}
+            </ul>
+            <ul className="flex flex-1 items-center justify-end gap-x-4">
+              <li>
+                <Icon icon="mynaui:bookmark" width={20} />
+                {/* <Icon icon="mynaui:bookmark-solid" width={20} /> */}
+              </li>
+              <li>
+                <Icon icon="mynaui:download" width={20} />
+              </li>
+            </ul>
           </footer>
         </aside>
       </div>
@@ -80,4 +109,4 @@ const Post = () => {
   );
 };
 
-export default Post;
+export default PostLayout;

@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createPost } from "~/components/Post/schema";
+import * as PostServices from "../services/post.services";
 
 import {
   createTRPCRouter,
@@ -41,17 +42,23 @@ export const postRouter = createTRPCRouter({
   //       },
   //     });
   //   }),
+  getPostById: publicProcedure
+    .input(z.number())
+    .query(async ({ ctx, input }) => {
+      const response = await PostServices.getPostById(ctx.db, input);
+      return response;
+    }),
 
-  getLatest: protectedProcedure.query(async ({ ctx }) => {
-    const post = await ctx.db.post.findFirst({
-      orderBy: { createdAt: "desc" },
-      where: { createdBy: { id: ctx.session.user.id } },
-    });
+  // getLatest: protectedProcedure.query(async ({ ctx }) => {
+  //   const post = await ctx.db.post.findFirst({
+  //     orderBy: { createdAt: "desc" },
+  //     where: { createdBy: { id: ctx.session.user.id } },
+  //   });
 
-    return post ?? null;
-  }),
+  //   return post ?? null;
+  // }),
 
-  getSecretMessage: publicProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
+  // getSecretMessage: publicProcedure.query(() => {
+  //   return "you can now see this secret message!";
+  // }),
 });

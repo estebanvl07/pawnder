@@ -8,6 +8,7 @@ const GoogleSignIn = () => {
   return (
     <Button
       variant="flat"
+      fullWidth
       onPress={() =>
         signIn("google", {
           redirect: false,

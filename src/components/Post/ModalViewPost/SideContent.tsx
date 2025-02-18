@@ -2,8 +2,20 @@ import { Button, User } from "@heroui/react";
 import React from "react";
 import Comments from "../Comments";
 import { motion } from "framer-motion";
+import { PostIncludes } from "../types/post";
+import { useRouter } from "next/router";
 
-const SideContent = () => {
+interface SideContentPropt {
+  post: PostIncludes;
+}
+
+const SideContent = ({ post }: SideContentPropt) => {
+  const router = useRouter();
+
+  const goToProfile = () => {
+    router.push(`/paw/${post.createdBy?.userTag}`);
+  };
+
   return (
     <motion.div
       initial={{ x: 100, opacity: 0.6 }}
@@ -12,21 +24,22 @@ const SideContent = () => {
       transition={{ duration: 0.1, ease: "easeInOut" }}
       className="z-10 h-screen w-full max-w-[25rem] p-2"
     >
-      <aside className="scrollbar-customize flex h-full w-full flex-col gap-y-4 overflow-y-auto rounded-md bg-white py-4">
+      <aside className="scrollbar-customize flex h-full w-full flex-col gap-y-4 overflow-y-auto rounded-md bg-white py-4 font-montserrat">
         <header className="flex items-start justify-between gap-8 px-4">
           <div className="flex gap-5">
             <User
-              // onClick={goToProfile}
+              onClick={goToProfile}
               avatarProps={{
                 size: "md",
-                src: "https://heroui.com/avatars/avatar-2.png",
+                src: post.createdBy?.image || "",
+                name: post.createdBy?.name || "",
               }}
               classNames={{
                 name: "hover:underline",
                 description: "",
               }}
-              description="Product Designer"
-              name="Zoey Lang"
+              description={`@${post.createdBy?.userTag}`}
+              name={post.createdBy?.username}
             />
           </div>
           <Button color="primary" radius="full" size="sm">
@@ -35,11 +48,7 @@ const SideContent = () => {
         </header>
         <main className="flex flex-col gap-y-4">
           <div className="flex flex-col gap-y-4 px-4">
-            <p className="-tracking-wide">
-              Bun s sigue poniendo mejor cada día! Pronto tendremos 100% de
-              compatibilidad con Node y un nuevo bucket S3 (Object Storage) en
-              Bun para almacenar información y soporte nativo PostgreSQL en Bun.
-            </p>
+            <p className="">{post.content}</p>
             <ul className="flex list-inside list-disc items-center gap-x-3 text-sm">
               <li className="opacity-70">5:24 PM</li>
               <li className="opacity-70">3 Feb 2024</li>

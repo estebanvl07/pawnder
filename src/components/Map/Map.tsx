@@ -48,11 +48,11 @@ const Map = () => {
     <div className="relative">
       <div ref={mapRef} className="h-[100vh] w-full" />
       <div ref={markerRef} className="rounded-full bg-white p-2">
-        <Avatar
+        {/* <Avatar
           src="https://heroui.com/avatars/avatar-1.png"
           size="md"
           radius="full"
-        />
+        /> */}
       </div>
     </div>
   );

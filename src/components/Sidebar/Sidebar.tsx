@@ -5,11 +5,10 @@ import { useSession } from "next-auth/react";
 import SignIn from "./SignIn";
 import ProfileButton from "./ProfileButton";
 import { Button, useDisclosure } from "@heroui/react";
-import CreatePostForm from "../Post/CreatePostForm";
 import ModalPost from "../Post/ModalPost";
 
 const Sidebar = () => {
-  const { status } = useSession();
+  const { status, update } = useSession();
   const isAuthenticating = status === "authenticated";
   const isLoading = status === "loading";
 
@@ -25,15 +24,17 @@ const Sidebar = () => {
               return <Option key={index} {...option} />;
             })}
           </ul>
-          <Button
-            onPress={onOpen}
-            color="primary"
-            fullWidth
-            className="mt-8"
-            radius="full"
-          >
-            Crear Post
-          </Button>
+          {isAuthenticating && (
+            <Button
+              onPress={onOpen}
+              color="primary"
+              fullWidth
+              className="mt-8"
+              radius="full"
+            >
+              Crear Post
+            </Button>
+          )}
         </nav>
         {!isLoading && (
           <footer>{!isAuthenticating ? <SignIn /> : <ProfileButton />}</footer>

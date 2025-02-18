@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 import { recoverUserEmail, sendConfirmationEmail } from "./email.services";
 import type { RegisterUserInputType } from "~/modules/Signin/Register/schema";
 import { comparePassword, hashPassword } from "~/utils/crypto";
@@ -24,6 +24,52 @@ import {
   updateVerificationCodeUsage,
   VerificationCodeType,
 } from "./verificationCode.services";
+import { RequestError } from "~/utils/errors";
+
+export async function getUserByTag(
+  db: PrismaClient,
+  options: {
+    userTag: string;
+    post: boolean;
+    commentsOfPost: boolean;
+  },
+) {
+  const { userTag, commentsOfPost, post } = options;
+
+  try {
+    const postsFound = await db.user.findFirst({
+      where: {
+        userTag,
+      },
+      include: {
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+            posts: true,
+          },
+        },
+        posts: post && {
+          include: {
+            createdBy: true,
+            images: true,
+            comments: commentsOfPost,
+            _count: {
+              select: {
+                comments: true,
+                likes: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return postsFound;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export async function registerUser(
   db: PrismaClient,
@@ -82,6 +128,102 @@ export async function registerUser(
       }
     }
     throw error;
+  }
+}
+
+export async function update(
+  db: PrismaClient,
+  userData: Prisma.UserUncheckedUpdateInput,
+) {
+  try {
+    const userFound = await db.user.findFirst({
+      where: {
+        id: userData.id as string,
+      },
+      include: {
+        userPassword: true,
+      },
+    });
+
+    if (!userFound) {
+      throw new Error("Usuario no encontrado");
+    }
+
+    await db.user.update({
+      where: {
+        id: userData.id as string,
+      },
+      data: {
+        ...userData,
+      },
+    });
+  } catch (error) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message:
+        "Ha ocurrido un error, prueba con otro correo o intenta más tarde",
+    });
+  }
+}
+
+export async function requiredPassword(db: PrismaClient, userId: string) {
+  try {
+    const hasPassword = await db.userPassword.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
+    return { hasPassword: Boolean(hasPassword) };
+  } catch (error) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message:
+        "Ha ocurrido un error, prueba con otro correo o intenta más tarde",
+    });
+  }
+}
+
+export async function createPassword(
+  db: PrismaClient,
+  userId: string,
+  password: string,
+) {
+  try {
+    const userFound = await db.user.findFirst({
+      where: {
+        id: userId,
+      },
+      include: {
+        userPassword: true,
+      },
+    });
+
+    if (!userFound?.email && userFound) {
+      throw new Error("Este usuario no tiene un email registrado");
+    }
+
+    const passwordHashed = hashPassword(password);
+
+    if (!userFound?.email) {
+      throw new Error("Correo no registrado");
+    }
+
+    await db.userPassword.create({
+      data: {
+        userId,
+        password: passwordHashed,
+        email: userFound?.email,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message:
+        "Ha ocurrido un error, prueba con otro correo o intenta más tarde",
+    });
   }
 }
 
@@ -147,6 +289,45 @@ export async function authPasswordUser(
   }
 
   return user;
+}
+
+export async function setPassword(
+  db: PrismaClient,
+  email: string,
+  password: string,
+  userId: string,
+) {
+  try {
+    const passwordHashed = hashPassword(password);
+
+    const userFound = await db.userPassword.findFirst({
+      where: {
+        userId,
+      },
+    });
+
+    if (userFound) {
+      await db.userPassword.update({
+        where: {
+          userId,
+        },
+        data: {
+          email,
+          password: passwordHashed,
+        },
+      });
+    } else {
+      await db.userPassword.create({
+        data: {
+          userId,
+          email,
+          password: passwordHashed,
+        },
+      });
+    }
+  } catch (error) {
+    throw error;
+  }
 }
 
 // TODO: REVIEW

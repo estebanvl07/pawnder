@@ -1,1 +1,1 @@
-export const CALLBACK_SIGN_IN_URL = "/home";
+export const CALLBACK_SIGN_IN_URL = "/paw";

@@ -11,6 +11,7 @@ import "~/styles/globals.css";
 import { Montserrat } from "next/font/google";
 import clsx from "clsx";
 import FilesProvider from "~/components/Post/context/FilesContext";
+import SearcherProvider from "~/contexts/searcherContext";
 
 const montserrat = Montserrat({
   weight: ["400", "500", "600", "700"],
@@ -27,7 +28,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <HeroUIProvider>
         <div className={clsx("-tracking-wide", montserrat.className)}>
           <FilesProvider>
-            <Component {...pageProps} />
+            <SearcherProvider>
+              <Component {...pageProps} />
+            </SearcherProvider>
           </FilesProvider>
         </div>
       </HeroUIProvider>

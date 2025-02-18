@@ -3,7 +3,7 @@ import { OptionProps } from "./types";
 
 export const SIDE_OPTIONS: OptionProps[] = [
   {
-    href: "/home",
+    href: "/paw",
     icon: "mynaui:home",
     title: "Inicio",
   },
@@ -13,12 +13,12 @@ export const SIDE_OPTIONS: OptionProps[] = [
     title: "Configuración",
   },
   {
-    href: "/profile",
+    href: "/paw/my",
     icon: "mynaui:user-circle",
     title: "Perfil",
   },
   {
-    href: "/search",
+    href: "/paw/search",
     icon: "mynaui:search",
     title: "Buscar",
   },

@@ -1,10 +1,16 @@
+import { useState } from "react";
 import Head from "next/head";
-import { GoogleSignIn } from "~/components";
 
-import { api } from "~/utils/api";
+import AuthLayout from "~/modules/Auth/AuthLayout";
+import LoginForm from "~/modules/Signin/LoginForm";
+import SignUpForm from "~/modules/Signin/SignUpForm";
 
-export default function Home() {
-  // const hello = api.post.hello.useQuery({ text: "from tRPC" });
+import withAuthRedirect from "~/lib/helpers/withAuthRedirect";
+
+export type AuthMode = "login" | "register";
+
+function Home() {
+  const [mode, setMode] = useState<AuthMode>("login");
 
   return (
     <>
@@ -14,30 +20,15 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        Iniciar sesion
-        <GoogleSignIn />
-      </main>
-      {/* <main className="flex h-full min-h-screen flex-col justify-between px-4">
-        <div className="absolute -left-[38%] -top-[55%] z-0 h-[30rem] w-[45rem] rotate-1 rounded-full bg-[#221269] blur-[30px]" />
-        <header className="relative flex h-20 items-center justify-between text-white">
-          <h1>Pawnder</h1>
-        </header>
-        <div className="absolute -bottom-[30%] -left-[30%] z-0 h-[30rem] w-[40rem] rotate-3 rounded-full bg-[#221269] blur-[30px]" />
-        <div className="relative flex flex-col items-center justify-center gap-y-2 text-white">
-          <h2 className="text-center text-4xl">
-            Adoptar es amar sin condiciones
-          </h2>
-          <p className="text-center">
-            Una plataforma para dar en adopción animales y ayudarles a encontrar
-            un hogar lleno de amor y cuidado.
-          </p>
-          <div className="flex items-center gap-3">
-            <Button color="primary">Encontrar un amigo</Button>
-            <Button variant="bordered">Dar en adopción</Button>
-          </div>
-        </div>
-      </main> */}
+      <AuthLayout>
+        {mode === "login" ? (
+          <LoginForm setMode={(mode: AuthMode) => setMode(mode)} />
+        ) : (
+          <SignUpForm setMode={(mode: AuthMode) => setMode(mode)} />
+        )}
+      </AuthLayout>
     </>
   );
 }
+
+export default withAuthRedirect(Home);
